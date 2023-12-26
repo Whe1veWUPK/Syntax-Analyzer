@@ -11,7 +11,8 @@
                 "-o",
                 "${workspaceFolder}\\exe\\${fileBasenameNoExtension}.exe",
                 "-I",
-                "${workspaceFolder}\\header"
+                "${workspaceFolder}\\header",
+                "-std=c++11"
             ],
             "options": {
                 "cwd": "${fileDirname}"

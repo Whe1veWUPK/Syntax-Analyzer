@@ -18,7 +18,7 @@ FirstSet::FirstSet(int index){
 
 //is InFirst Set
 bool FirstSet::isInFirstSet(char ch){
-    auto findResult=firstSet.find(ch);
+    auto findResult = this->firstSet.find(ch);
     if(findResult==firstSet.end()){
         return false;
     }
@@ -37,6 +37,11 @@ int FirstSet::getIndex(){
     return this->index;
 }
 
+//set the over flag(whether the first set has been calculated)
+void FirstSet::setOverFlag(bool flag){
+    this->isOver = flag;
+}
+
 //whether the set has been calculated
 bool FirstSet::isFinished(){
     return this->isOver;
@@ -51,4 +56,18 @@ void FirstSet::addIntoFirstSet(char ch){
     else{
         return;
     }
+}
+
+//traverse the first set
+void FirstSet::traverseSet(){
+    std::unordered_set<char>::iterator iter;
+    for (iter = this->firstSet.begin(); iter != this->firstSet.end(); ++iter){
+        std::cout << *iter << " ";
+    }
+    std::cout << "\n";
+}
+
+// get the first set
+std::unordered_set<char> FirstSet::getFirstSet(){
+    return this->firstSet;
 }
