@@ -18,10 +18,11 @@ public:
     void traverseNonTerminal();// traverse the non-terminal set
     void traversePredictTable(); // traverse the predict table
 
-    
+    int getIndex(char nonTerminal, char terminal);// get index of the productions
+
     std::unordered_set<char> getTerminalSet(); // get terminal set
     std::unordered_set<char> getNonTerminalSet(); //get Non-terminal set
-
+    std::unordered_map<std::string, int> getPredictTable(); //get the predict table
 };
 
 #endif

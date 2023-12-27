@@ -5,7 +5,8 @@
 #include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
-
+#include <stack>
+#include <string>
 
 #include "Production.hpp"
 #include "FirstSet.hpp"
@@ -331,6 +332,74 @@ void createPredictTable(FirstSet*firstSet,FollowSet*followSet,PredictTable*predi
     } 
 }
 
+void startAnalyze(PredictTable*predictTable,Production*productions){
+    std::cout << "Please input the string to be analyze:\n";
+    std::string str;
+    std::cin >> str;
+    std::stack<char> analyzeStack;
+    str.push_back('$');
+
+    std::cout << "Matched\tStack\tInput\tAction\n";
+
+    // the curlocation of the input string
+    int ip = 0;
+
+    // initial stack
+    analyzeStack.push('$');
+    analyzeStack.push('S');
+    std::string stackQueue;
+    
+    stackQueue.insert(0,1,'S');
+    stackQueue.push_back('$');
+
+    std::string matched;
+    
+    char X = analyzeStack.top();
+    while(X!='$'){
+        bool findResult = predictTable->isAnItemInTable(X, str[ip]);
+        if (X == str[ip]){
+            analyzeStack.pop();
+            matched.push_back(str[ip]);
+            ++ip;
+
+            //update remained
+            std::string temp;
+            temp = str.substr(ip);
+            // update matched
+
+            
+            //update stack queue
+            stackQueue = stackQueue.substr(1);
+            // output
+            std::cout << matched << "\t" << stackQueue << "\t"<<temp<< "\tMatch " <<X<< "\n";
+        }
+        else if(X<'A'||X>'Z'){
+            std::cerr << "Analyze error: the top character is a terminal.\n";
+        }
+        else if(!findResult){
+            std::cerr << "Analyze error: the item is empty.\n";
+        }
+        else{
+            int index = predictTable->getIndex(X, str[ip]);
+            std::string temp;
+            temp = str.substr(ip);
+
+            analyzeStack.pop();
+            stackQueue = stackQueue.substr(1);
+            std::string rightPart = productions[index].getRightPart();
+            for (int i = rightPart.size() - 1; i >= 0;--i){
+                if(rightPart[i]!='#'){
+                    // the character is not eps
+                    analyzeStack.push(rightPart[i]);
+                    stackQueue.insert(0, 1,rightPart[i]);
+                }
+            }
+            std::cout << matched << "\t" << stackQueue << "\t"<<temp<< "\tOutput " << productions[index].getLeftPart() << " -> " << productions[index].getRightPart() << "\n";
+        }
+        X = analyzeStack.top();
+    }
+}
+
 int main(){
 
     std::cout << "Please input the file path that stored the LL(1) grammar."<<"\n";
@@ -430,10 +499,16 @@ int main(){
     // create the table item
     createPredictTable(firstSet, followSet, &predictTable, productions, number);
 
-    //traverse the table
-    predictTable.traversePredictTable();
-
     
+
+    //start analyze
+    char flag = 'Y';
+    while(flag=='Y'){
+        startAnalyze(&predictTable, productions);
+        std::cout << "Do you want to Continue? Yes(Y) or No(N)\n";
+        std::cin >> flag;
+    }
+
     ifs.close();
     return 0;
 }

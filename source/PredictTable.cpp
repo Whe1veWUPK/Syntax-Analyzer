@@ -102,6 +102,15 @@ void PredictTable::traversePredictTable(){
 }
 
 
+// get index of productions
+int PredictTable::getIndex(char nonTerminal,char terminal){
+    std::string temp;
+    temp.push_back(nonTerminal);
+    temp.push_back(terminal);
+    auto findResult = this->item.find(temp);
+    return findResult->second;
+}
+
 // get terminal set
 std::unordered_set<char> PredictTable::getTerminalSet(){
     return this->terminal;
@@ -110,4 +119,9 @@ std::unordered_set<char> PredictTable::getTerminalSet(){
 // get non-terminal set
 std::unordered_set<char> PredictTable::getNonTerminalSet(){
     return this->nonTerminal;
+}
+
+// get the predict-table
+std::unordered_map<std::string,int> PredictTable::getPredictTable(){
+    return this->item;
 }
