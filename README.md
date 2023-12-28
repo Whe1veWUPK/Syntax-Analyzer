@@ -11,3 +11,4 @@ This Project is the SEU CSE's Dr. Qi's Compile principle class's Lab 2(Syntax An
 * The analyzer has been set a ```panic model```.
 * The ```synchronize set``` is set the follow set that is not in the predict table.
 * The production's format should be ```X -> xxx``` (Notice there are ```spaces``` between the leftpart of the production and ```->```, between ```->``` and rightpart of production).
+* Compile the ```main.cpp``` and then run it to analyze the grammar.
