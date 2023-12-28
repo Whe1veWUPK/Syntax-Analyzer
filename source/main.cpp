@@ -355,17 +355,18 @@ void startAnalyze(PredictTable*predictTable,Production*productions){
     std::string matched;
     
     char X = analyzeStack.top();
-    while(X!='$'){
+    while((X!='$')&&(ip<str.size())){
         bool findResult = predictTable->isAnItemInTable(X, str[ip]);
         if (X == str[ip]){
             analyzeStack.pop();
+            // update matched
             matched.push_back(str[ip]);
             ++ip;
 
             //update remained
             std::string temp;
             temp = str.substr(ip);
-            // update matched
+            
 
             
             //update stack queue
@@ -377,10 +378,29 @@ void startAnalyze(PredictTable*predictTable,Production*productions){
             std::cerr << "Analyze error: the top character is a terminal.\n";
         }
         else if(!findResult){
-            std::cerr << "Analyze error: the item is empty.\n";
+            ++ip;
+            //update remained
+            std::string temp;
+            temp = str.substr(ip);
+
+            std::cout << matched << "\t" << stackQueue << "\t" << temp << "\tError: the terminal will be skipped"<< "\n";
         }
         else{
             int index = predictTable->getIndex(X, str[ip]);
+            if(index==-1){
+                // the table item is a synchronize item
+                analyzeStack.pop();
+
+                //update the stack
+                stackQueue = stackQueue.substr(1);
+                
+                //input
+                std::string temp;
+                temp = str.substr(ip);
+                std::cout << matched << "\t" << stackQueue << "\t" << temp << "\tError: find a synchronize item, the non-terminal has been popped\n";
+         
+            }
+            else{
             std::string temp;
             temp = str.substr(ip);
 
@@ -395,8 +415,32 @@ void startAnalyze(PredictTable*predictTable,Production*productions){
                 }
             }
             std::cout << matched << "\t" << stackQueue << "\t"<<temp<< "\tOutput " << productions[index].getLeftPart() << " -> " << productions[index].getRightPart() << "\n";
+            }
         }
         X = analyzeStack.top();
+    }
+}
+
+
+// add Synchronize set
+void addSynSet(PredictTable*predictTable,FollowSet*followSet){
+    std::unordered_set<char> nonTerminalSet = predictTable->getNonTerminalSet();
+    for (auto i=nonTerminalSet.begin(); i !=nonTerminalSet.end(); ++i){
+        // get each non-terminal's index
+        std::string temp;
+        temp.push_back(*i);
+        auto findResult = hashMap.find(temp);
+        int index = findResult->second;
+
+        // add it into the table
+        std::unordered_set<char> tempSet = followSet[index].getFollowSet();
+        for (auto j = tempSet.begin(); j != tempSet.end();++j){
+            bool isInPredictTable = predictTable->isAnItemInTable(*i, *j);
+            if(!isInPredictTable){
+                // if it is not in the predict table
+                predictTable->addItem(*i, *j, -1);
+            }
+        }
     }
 }
 
@@ -499,7 +543,8 @@ int main(){
     // create the table item
     createPredictTable(firstSet, followSet, &predictTable, productions, number);
 
-    
+    // add synchronize set
+    addSynSet(&predictTable, followSet);
 
     //start analyze
     char flag = 'Y';
