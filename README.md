@@ -6,6 +6,7 @@ This Project is the SEU CSE's Dr. Qi's Compile principle class's Lab 2(Syntax An
 * So the grammar to be analyzed must be  ```LL(1)``` grammar.
 * The non-terminal are between ```'A'``` and ```'Z'```.
 * And there must be a start symbol ```'S'```.
+* ```'#'``` is refer to the empty production.
 
 ## Other
 * The analyzer has been set a ```panic model```.
